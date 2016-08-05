@@ -612,7 +612,6 @@ class PatchesParser(object):
         return commits
 
 def to_key(s):
-    import nltk
     import string
 
     key = s.lower()
@@ -695,4 +694,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
