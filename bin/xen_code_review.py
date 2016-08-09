@@ -35,29 +35,22 @@ def parse_file_args():
     # There are two sections: mysql and elasticsearch
     if config.has_section("mysql"):
         if config.has_option("mysql", "user") and \
-           config.has_option("mysql", "password") and \
-           config.has_option("mysql", "mlstats_db") and \
-           config.has_option("mysql", "cvsanaly_db") and \
-           config.has_option("mysql", "code_review_db"):
-             args["mysql"] = dict(config.items("mysql"))
+            config.has_option("mysql", "password") and \
+            config.has_option("mysql", "mlstats_db") and \
+            config.has_option("mysql", "cvsanaly_db") and \
+            config.has_option("mysql", "code_review_db"):
+                args["mysql"] = dict(config.items("mysql"))
 
-    if config.has_section("elasticsearch"):
-        if config.has_option("elasticsearch", "user") and \
-           config.has_option("elasticsearch", "password") and \
-           config.has_option("elasticsearch", "host") and \
-           config.has_option("elasticsearch", "port") and \
-           config.has_option("elasticsearch", "path"):
-             args["elasticsearch"] = dict(config.items("elasticsearch"))
-
-    if not(args.has_key("mysql") and args.has_key("elasticsearch")):
-        raise Exception("Section 'mysql' or section 'elasticsearch' not found in the 'settings' file")
+    if 'mysql' not in args:
+        raise Exception("Section 'mysql' not found in the 'settings' file")
 
     return args
+
 
 def connect(args):
     user = args["mysql"]["user"]
     password = args["mysql"]["password"]
-    host = "localhost"
+
     db = args["mysql"]["code_review_db"]
     try:
         db = MySQLdb.connect(user = user, passwd = password, db = db, charset='utf8')
@@ -65,20 +58,20 @@ def connect(args):
     except:
         raise Exception("Database connection error")
 
+
 def execute_query(connector, query):
     results = int (connector.execute(query))
-    cont = 0
+
     if results > 0:
         result1 = connector.fetchall()
         return result1
     else:
         return []
 
-        db, cursor = connect()
 
 def update_tables(args):
 
-    db, cursor = connect(args)
+    _, cursor = connect(args)
     # Update tables to produce UTC dates needed for the analysis.
     query = "alter table patches add column date_utc DATETIME;"
     execute_query(cursor, query)
@@ -105,6 +98,7 @@ def update_tables(args):
     execute_query(cursor, query)
     query = "update commits set committer_date_utc=TIMESTAMPADD(SECOND, -committer_date_tz, committer_date);"
     execute_query(cursor, query)
+
 
 def main():
     args = parse_file_args()
