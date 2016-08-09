@@ -24,7 +24,8 @@ import MySQLdb
 from ConfigParser import ConfigParser
 
 
-SETTINGS = "settings" # arguments file
+SETTINGS = "./settings" # arguments file
+
 
 def parse_file_args():
     config = ConfigParser()
@@ -117,9 +118,15 @@ def main():
     # Updating the database code_review_db with UTC dates.
     update_tables(args)
 
-    # TODO: Running the analysis to produce patch series information
+    # Running the analysis to produce patch series information
+    run_patchseries = ("python3 ../data-analysis/xen_analysis_ps.py -c='%s'") % \
+                        (SETTINGS)
+    os.system(run_patchseries)
 
-    # TODO: Running the analysis to produce patch_series timing information
+    # Running the analysis to produce patch_series timing information
+    run_patchseries_ts = ("python3 ../data-analysis/xen_analysis_ps_datetime.py -c='%s'") % \
+                            (SETTINGS)
+    os.system(run_patchseries_ts)
 
 
 if __name__ == '__main__':
