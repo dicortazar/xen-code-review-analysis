@@ -138,6 +138,8 @@ def connect_to_elasticsearch(**params):
 
 
 def write_to_elasticsearch(conn, data):
+    conn.indices.create(index=XEN_INDEX, ignore=400)
+
     columns = data.columns.values.tolist()
 
     for row in data.itertuples():
