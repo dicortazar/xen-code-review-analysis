@@ -49,6 +49,7 @@ import argparse
 
 import pandas
 
+from mappings import PS_TIMEFOCUSED_MAPPING
 from queries import (QUERY_PATCH_SERIE,
                      QUERY_TIME2MERGE,
                      QUERY_TIME2COMMIT)
@@ -138,7 +139,8 @@ def connect_to_elasticsearch(**params):
 
 
 def write_to_elasticsearch(conn, data):
-    conn.indices.create(index=XEN_INDEX, ignore=400)
+    conn.indices.create(index=XEN_INDEX, body=PS_TIMEFOCUSED_MAPPING,
+                        ignore=400)
 
     columns = data.columns.values.tolist()
 

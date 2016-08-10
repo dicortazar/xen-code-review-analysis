@@ -73,7 +73,7 @@ import pandas
 
 from elasticsearch import helpers
 
-
+from mappings import PS_REVIEWERS_MAPPING
 from queries import (QUERY_PATCHSERIES,
                      QUERY_PATCHES,
                      QUERY_FLAGS,
@@ -199,7 +199,8 @@ def connect_to_elasticsearch(**params):
 
 
 def write_to_elasticsearch(conn, data):
-    conn.indices.create(index=XEN_INDEX, ignore=400)
+    conn.indices.create(index=XEN_INDEX, body=PS_REVIEWERS_MAPPING,
+                        ignore=400)
 
     columns = data.columns.values.tolist()
 
