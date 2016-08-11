@@ -96,61 +96,108 @@ PS_REVIEWERS_MAPPING = {
         }
     }
 }
+{
+    "xen-patchseries-timefocused": {
+        "mappings": {
+            "patchserie": {
+                "properties": {
+                    "committime": {
+                        "format": "strict_date_optional_time||epoch_millis",
+                        "type": "date"
+                    },
+                    "lastcommentdate": {
+                        "format": "strict_date_optional_time||epoch_millis",
+                        "type": "date"
+                    },
+                    "mergetime": {
+                        "format": "strict_date_optional_time||epoch_millis",
+                        "type": "date"
+                    },
+                    "message_id": {
+                        "index": "not_analyzed",
+                        "type": "string"
+                    },
+                    "num_commenters": {
+                        "type": "long"
+                    },
+                    "num_comments": {
+                        "type": "long"
+                    },
+                    "num_patches": {
+                        "type": "long"
+                    },
+                    "num_versions": {
+                        "type": "long"
+                    },
+                    "patchserie_id": {
+                        "type": "long"
+                    },
+                    "sender": {
+                        "index": "not_analyzed",
+                        "type": "string"
+                    },
+                    "sender_domain": {
+                        "index": "not_analyzed",
+                        "type": "string"
+                    },
+                    "sent_date_x": {
+                        "format": "strict_date_optional_time||epoch_millis",
+                        "type": "date"
+                    },
+                    "sent_date_y": {
+                        "format": "strict_date_optional_time||epoch_millis",
+                        "type": "date"
+                    },
+                    "subject": {
+                        "index": "not_analyzed",
+                        "type": "string"
+                    },
+                    "time2commit": {
+                        "type": "double"
+                    },
+                    "time2merge": {
+                        "type": "double"
+                    }
+                }
+            }
+        }
+    }
+}
 
 PS_TIMEFOCUSED_MAPPING = {
     "mappings": {
         "patchserie": {
             "properties": {
-                "balance": {
-                    "type": "long"
+                "committime": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
                 },
-                "comment_id": {
-                    "type": "long"
+                "lastcommentdate": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
                 },
-                "emailtype": {
-                    "index": "not_analyzed",
-                    "type": "string"
-                },
-                "flag": {
-                    "index": "not_analyzed",
-                    "type": "string"
-                },
-                "is_acked": {
-                    "type": "long"
-                },
-                "merged": {
-                    "type": "long"
+                "mergetime": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
                 },
                 "message_id": {
                     "index": "not_analyzed",
                     "type": "string"
                 },
-                "num_flag_ack": {
+                "num_commenters": {
                     "type": "long"
                 },
-                "num_flag_review": {
+                "num_comments": {
                     "type": "long"
                 },
-                "num_patch": {
+                "num_patches": {
                     "type": "long"
                 },
-                "patch_id": {
+                "num_versions": {
                     "type": "long"
                 },
                 "patchserie_id": {
                     "type": "long"
-                },
-                "patchserie_numackedpatches": {
-                    "type": "double"
-                },
-                "patchserie_numpatches": {
-                    "type": "double"
-                },
-                "patchserie_percentage_ackedpatches": {
-                    "type": "long"
-                },
-                "post_ack_comment": {
-                    "type": "double"
                 },
                 "sender": {
                     "index": "not_analyzed",
@@ -160,13 +207,23 @@ PS_TIMEFOCUSED_MAPPING = {
                     "index": "not_analyzed",
                     "type": "string"
                 },
-                "sent_date": {
+                "sent_date_x": {
+                    "format": "strict_date_optional_time||epoch_millis",
+                    "type": "date"
+                },
+                "sent_date_y": {
                     "format": "strict_date_optional_time||epoch_millis",
                     "type": "date"
                 },
                 "subject": {
                     "index": "not_analyzed",
                     "type": "string"
+                },
+                "time2commit": {
+                    "type": "double"
+                },
+                "time2merge": {
+                    "type": "double"
                 }
             }
         }
