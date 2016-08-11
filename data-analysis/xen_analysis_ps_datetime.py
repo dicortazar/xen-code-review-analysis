@@ -74,6 +74,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-c', '--config', dest='config_file',
                         default='./settings')
+    parser.add_argument('-i', '--index', dest='xen_index',
+                        default=XEN_INDEX)
     args = parser.parse_args()
 
     config = read_config_file(args.config_file)
@@ -84,7 +86,7 @@ def main():
     data = calculate(dfs)
 
     es_conn = connect_to_elasticsearch(**config['elasticsearch'])
-    write_to_elasticsearch(es_conn, data)
+    write_to_elasticsearch(es_conn, data, args.xen_index)
 
 
 def load_dataframes(cursor):
@@ -138,8 +140,8 @@ def connect_to_elasticsearch(**params):
     return conn
 
 
-def write_to_elasticsearch(conn, data):
-    conn.indices.create(index=XEN_INDEX, body=PS_TIMEFOCUSED_MAPPING,
+def write_to_elasticsearch(conn, data, xen_index):
+    conn.indices.create(index=xen_index, body=PS_TIMEFOCUSED_MAPPING,
                         ignore=400)
 
     columns = data.columns.values.tolist()
@@ -147,7 +149,7 @@ def write_to_elasticsearch(conn, data):
     for row in data.itertuples():
         uniq_id = row[0]
         doc = to_dict(row, columns)
-        _ = conn.index(index=XEN_INDEX,
+        _ = conn.index(index=xen_index,
                        doc_type='patchserie',
                        id=uniq_id, body=doc)
 

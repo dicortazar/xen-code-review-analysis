@@ -40,9 +40,13 @@ def parse_file_args():
             config.has_option("mysql", "cvsanaly_db") and \
             config.has_option("mysql", "code_review_db"):
                 args["mysql"] = dict(config.items("mysql"))
-
-    if 'mysql' not in args:
+    else:
         raise Exception("Section 'mysql' not found in the 'settings' file")
+
+    if config.has_section("elasticsearch"):
+        args["elasticsearch"] = dict(config.items("elasticsearch"))
+    else:
+        raise Exception("Section 'elasticsearch' not found in the 'settings' file")
 
     return args
 
@@ -113,13 +117,13 @@ def main():
     update_tables(args)
 
     # Running the analysis to produce patch series information
-    run_patchseries = ("python3 ../data-analysis/xen_analysis_ps.py -c='%s'") % \
-                        (SETTINGS)
+    run_patchseries = ("python3 ../data-analysis/xen_analysis_ps.py -c='%s' -i='%s'") % \
+                        (SETTINGS, args['elasticsearch']['xen_reviewers'])
     os.system(run_patchseries)
 
     # Running the analysis to produce patch_series timing information
-    run_patchseries_ts = ("python3 ../data-analysis/xen_analysis_ps_datetime.py -c='%s'") % \
-                            (SETTINGS)
+    run_patchseries_ts = ("python3 ../data-analysis/xen_analysis_ps_datetime.py -c='%s' -i='%s'") % \
+                            (SETTINGS, args['elasticsearch']['xen_timefocused'])
     os.system(run_patchseries_ts)
 
 
