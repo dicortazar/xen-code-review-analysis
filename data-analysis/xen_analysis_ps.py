@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2015-2016 Bitergia
@@ -66,6 +66,7 @@ And the following tables (searches in Kibana nomenclature) at the very end:
   * Comments
   * Reviews
 """
+from __future__ import absolute_import
 
 import argparse
 

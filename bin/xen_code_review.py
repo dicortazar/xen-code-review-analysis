@@ -117,12 +117,12 @@ def main():
     update_tables(args)
 
     # Running the analysis to produce patch series information
-    run_patchseries = ("python3 ../data-analysis/xen_analysis_ps.py -c='%s' -i='%s'") % \
+    run_patchseries = ("python ../data-analysis/xen_analysis_ps.py -c='%s' -i='%s'") % \
                         (SETTINGS, args['elasticsearch']['xen_reviewers'])
     os.system(run_patchseries)
 
     # Running the analysis to produce patch_series timing information
-    run_patchseries_ts = ("python3 ../data-analysis/xen_analysis_ps_datetime.py -c='%s' -i='%s'") % \
+    run_patchseries_ts = ("python ../data-analysis/xen_analysis_ps_datetime.py -c='%s' -i='%s'") % \
                             (SETTINGS, args['elasticsearch']['xen_timefocused'])
     os.system(run_patchseries_ts)
 

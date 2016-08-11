@@ -21,7 +21,12 @@
 #     Santiago Dueñas <sduenas@bitergia.com>
 #
 
-import configparser
+from __future__ import absolute_import
+
+try:
+    import configparser
+except ImportError:
+    import ConfigParser as configparser
 
 import elasticsearch
 import numpy
