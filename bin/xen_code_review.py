@@ -75,7 +75,7 @@ def execute_query(connector, query):
 
 def update_tables(args):
 
-    _, cursor = connect(args)
+    conn, cursor = connect(args)
     # Update tables to produce UTC dates needed for the analysis.
     query = "alter table patches add column date_utc DATETIME;"
     execute_query(cursor, query)
@@ -90,7 +90,7 @@ def update_tables(args):
     query = "alter table commits add column committer_date_utc DATETIME;"
     execute_query(cursor, query)
 
-    query = "update patches set date_utc=TIMESTAMPADD(SECOND, -date_tz, date)"
+    query = "update patches set date_utc=TIMESTAMPADD(SECOND, -date_tz, date);"
     execute_query(cursor, query)
     query = "update patch_series_version set date_utc=TIMESTAMPADD(SECOND, -date_tz, date);"
     execute_query(cursor, query)
@@ -102,6 +102,7 @@ def update_tables(args):
     execute_query(cursor, query)
     query = "update commits set committer_date_utc=TIMESTAMPADD(SECOND, -committer_date_tz, committer_date);"
     execute_query(cursor, query)
+    conn.commit()
 
 
 def main():
