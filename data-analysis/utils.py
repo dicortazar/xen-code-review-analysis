@@ -28,8 +28,6 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-import datetime
-
 import elasticsearch
 import numpy
 
@@ -69,10 +67,6 @@ def to_dict(row, columns):
             value = int(value)
         elif isinstance(value, numpy.float64):
             value = float(value)
-        elif isinstance(value, datetime.datetime):
-            value = str(value)
-        else:
-            value = str(value)
 
         d[column] = value
 
