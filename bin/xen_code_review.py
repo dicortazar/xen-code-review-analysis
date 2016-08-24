@@ -24,7 +24,8 @@ import MySQLdb
 from ConfigParser import ConfigParser
 
 
-SETTINGS = "settings" # arguments file
+SETTINGS = "./settings" # arguments file
+
 
 def parse_file_args():
     config = ConfigParser()
@@ -34,29 +35,26 @@ def parse_file_args():
     # There are two sections: mysql and elasticsearch
     if config.has_section("mysql"):
         if config.has_option("mysql", "user") and \
-           config.has_option("mysql", "password") and \
-           config.has_option("mysql", "mlstats_db") and \
-           config.has_option("mysql", "cvsanaly_db") and \
-           config.has_option("mysql", "code_review_db"):
-             args["mysql"] = dict(config.items("mysql"))
+            config.has_option("mysql", "password") and \
+            config.has_option("mysql", "mlstats_db") and \
+            config.has_option("mysql", "cvsanaly_db") and \
+            config.has_option("mysql", "code_review_db"):
+                args["mysql"] = dict(config.items("mysql"))
+    else:
+        raise Exception("Section 'mysql' not found in the 'settings' file")
 
     if config.has_section("elasticsearch"):
-        if config.has_option("elasticsearch", "user") and \
-           config.has_option("elasticsearch", "password") and \
-           config.has_option("elasticsearch", "host") and \
-           config.has_option("elasticsearch", "port") and \
-           config.has_option("elasticsearch", "path"):
-             args["elasticsearch"] = dict(config.items("elasticsearch"))
-
-    if not(args.has_key("mysql") and args.has_key("elasticsearch")):
-        raise Exception("Section 'mysql' or section 'elasticsearch' not found in the 'settings' file")
+        args["elasticsearch"] = dict(config.items("elasticsearch"))
+    else:
+        raise Exception("Section 'elasticsearch' not found in the 'settings' file")
 
     return args
+
 
 def connect(args):
     user = args["mysql"]["user"]
     password = args["mysql"]["password"]
-    host = "localhost"
+
     db = args["mysql"]["code_review_db"]
     try:
         db = MySQLdb.connect(user = user, passwd = password, db = db, charset='utf8')
@@ -64,20 +62,20 @@ def connect(args):
     except:
         raise Exception("Database connection error")
 
+
 def execute_query(connector, query):
     results = int (connector.execute(query))
-    cont = 0
+
     if results > 0:
         result1 = connector.fetchall()
         return result1
     else:
         return []
 
-        db, cursor = connect()
 
 def update_tables(args):
 
-    db, cursor = connect(args)
+    conn, cursor = connect(args)
     # Update tables to produce UTC dates needed for the analysis.
     query = "alter table patches add column date_utc DATETIME;"
     execute_query(cursor, query)
@@ -92,7 +90,7 @@ def update_tables(args):
     query = "alter table commits add column committer_date_utc DATETIME;"
     execute_query(cursor, query)
 
-    query = "update patches set date_utc=TIMESTAMPADD(SECOND, -date_tz, date)"
+    query = "update patches set date_utc=TIMESTAMPADD(SECOND, -date_tz, date);"
     execute_query(cursor, query)
     query = "update patch_series_version set date_utc=TIMESTAMPADD(SECOND, -date_tz, date);"
     execute_query(cursor, query)
@@ -104,6 +102,8 @@ def update_tables(args):
     execute_query(cursor, query)
     query = "update commits set committer_date_utc=TIMESTAMPADD(SECOND, -committer_date_tz, committer_date);"
     execute_query(cursor, query)
+    conn.commit()
+
 
 def main():
     args = parse_file_args()
@@ -117,9 +117,15 @@ def main():
     # Updating the database code_review_db with UTC dates.
     update_tables(args)
 
-    # TODO: Running the analysis to produce patch series information
+    # Running the analysis to produce patch series information
+    run_patchseries = ("python ../data-analysis/xen_analysis_ps.py -c='%s' -i='%s'") % \
+                        (SETTINGS, args['elasticsearch']['xen_reviewers'])
+    os.system(run_patchseries)
 
-    # TODO: Running the analysis to produce patch_series timing information
+    # Running the analysis to produce patch_series timing information
+    run_patchseries_ts = ("python ../data-analysis/xen_analysis_ps_datetime.py -c='%s' -i='%s'") % \
+                            (SETTINGS, args['elasticsearch']['xen_timefocused'])
+    os.system(run_patchseries_ts)
 
 
 if __name__ == '__main__':
